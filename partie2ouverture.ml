@@ -47,6 +47,34 @@ let resultat_lettre_racine =  liste_lettre x ;;
 
  affichage resultat_lettre_racine ;;
 
-( * fonction qui construit l'arbre d'une chaine de caractère * )
+
+
+let  ajout_racine e a = 
+match a with
+| Empty -> Node(e,[])
+| Node(x,l) -> Node(x, l@[Node(e ,[]) ]);; 
+
+
+
+
+let rec souschaine  s abr =  let s1= Bytes.of_string s  in  
+    let rec  s_liste ss l=
+        match l with 
+        | []->false  
+        |(q::t )->  souschaine  ss q  ||   s_liste ss t  in 
+match abr  with 
+ Empty -> false                                       
+ |Node (e, l )-> if (Bytes.get s1 (0) == e   )  then 
+                        if (String.length s == 1  && Bytes.get s1 (0)=='#' ) then  true
+                        else 
+                         (print_string ( String.sub s  1  ((String.length s )-1)) ; s_liste (String.sub s  1  ((String.length s )-1))  l  )  
+                    else  
+                       s_liste s  l 
+                    ;;
+      
+let exemple =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[]) ; Node ( 'S',[])  ]) ;;     
+
+
+Printf.printf "%B" (souschaine "AS#" exemple );; 
 
 
