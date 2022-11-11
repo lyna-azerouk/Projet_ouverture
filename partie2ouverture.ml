@@ -83,43 +83,25 @@ match abr  with
                  else Node (e ,  s_liste s l  ) ;;
 
 
- (* print_string ( affichier ( construire "ANA" (Node ('.', [Node ('#' ,[Empty]) ; Node ('B' ,[Empty])  ] ) )) );;  *) 
+(* print_string ( affichier ( construire "NE" (Node ('.', [Node ('#' ,[Empty]) ; Node ('B' ,[Empty])  ] ) )) );;    *)
 
-let  sufix chaine =  let i = ref 0  and abr = ref (Node ('.', [Node ('#' ,[Empty])] ) ) in 
-   while (!i)< ((String.length chaine )-1)do 
-      abr:= construire ( String.sub chaine  (!i) ((String.length chaine )-1))   ((!)abr) ;
-      i:= (!i )+1 ;
+
+let  sufix chaine =  let  abr = ref (Node ('.', [Node ('#' ,[Empty])] ) ) in 
+   for i =0 to  (String.length chaine )-1 do 
+      abr:= construire ( String.sub chaine   i ((String.length chaine ) - i ))   ((!)abr) ;
+  
     done ;
     (!) abr 
 ;;
-print_string ( affichier ( sufix "Lyn")  );;
+  (* print_string ( affichier ( sufix "BANANE")  ) *) ;;
 
  (*----------------------------------------------------- *)
-
-let element l = match l with 
-[]->'.'
-|(q::t)->get_1_2 q 
-let  rec suite s = match s with 
-[]->[]
-|q::t->t 
-
-let rec  compression abr =   
- let rec  s_liste l = match l with  
- []->[]
- |q::t-> [compression q ] @ s_liste t  in 
-match  abr with
-|Empty ->Empty 
-|Node (e , liste)-> if (List.length liste  == 1)  then   Node ((Char.escaped e) ^  Char.escaped (element liste) , s_liste (suite liste))
-                
-                else   Node(Char.escaped e, s_liste liste )  ;;
- 
- 
  
 
 let exemple0 =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[Node ( 'S',[Node ( 'S',[Node ( 'S',[])])])  ])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[ Node ( 'A',[])]) ; Node ( 'S',[])  ]) ;;    
 
 
-
+(* ----------------------------------------------------- *)
 let rec souschaine  s abr =  let s1= Bytes.of_string s  in  
     let rec  s_liste ss l=
         match l with 
@@ -135,16 +117,35 @@ match abr  with
                        s_liste s  l 
                     ;;
       
-let exemple =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[ Node ( 'A',[])]) ; Node ( 'S',[])  ]) ;;    
-
-
-
-
+let exemple =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[ Node ( 'A',[])]) ; Node ( 'S',[])  ]) ;;  
 
 (* Printf.printf "%B" (souschaine "AS#" exemple );; *)
 
+(* ------------------------------------------------------------------- *)
 
+let  rec suite s = match s with 
+[]->[]
+|q::t->t ;;
 
+let get_2_2 abr = match abr with 
+|Empty -> []
+|Node (e,l)->l
+
+let rec ft liste = match liste with 
+|[]->" " 
+|q::t-> if ( List.length  (get_2_2 q)  ==1 )then  Char.escaped  (get_1_2 (q)) ^  ft  (get_2_2 q)     else   Char.escaped  ( get_1_2 (q))
+
+let rec  compression abr =   
+ let rec  s_liste l = match l with  
+ []->[]
+ |q::t-> [compression q ] @ s_liste t  in 
+match  abr with
+|Empty ->Empty 
+|Node (e , liste)-> if (List.length liste  == 1)  then   Node ((Char.escaped e) ^  (ft liste) , s_liste ( suite liste))
+                
+                else   Node(Char.escaped e, s_liste liste )  ;;
+ 
+;;
 
 
 let  rec affichier_compression arbre =  
@@ -154,18 +155,13 @@ let  rec affichier_compression arbre =
       |q::t->( affichier_compression q)^ ( liste_affiche t ) in 
 match arbre  with 
     |Empty-> " "
-    |Node (e, l)->"\n\n  " ^ e ^"\n /"  ^ liste_affiche l ;; 
+    |Node (e, l)->"Node ( " ^ e ^", ["  ^ liste_affiche l ^"] )" ;; 
 
 
-let exemple1 = Node ('A',[Node('A',[Node('A',[Node('A',[])])])]) ;;
+
+let exemple1 =  Node ( 'A',  [Node('B',[Node('C',[Node('D',[Node('#',[Node('.',[]) ; Node('.',[])])])])])   ; Node ('R',[Node('#',[])]) ])  ;; 
 
 print_string ( affichier_compression ( compression exemple1 ));;
 
 
-
-
-
-let rec to_list a = match a with
-  |Empty -> []
-  |Node(x,[])-> [x]
-  |Node(x,l) -> x ::(List.fold_left List.append [] (List.map to_list l))
+(* -------------------------------------------- *)
