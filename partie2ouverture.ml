@@ -160,3 +160,12 @@ match arbre  with
 let exemple1 = Node ('A',[Node('A',[Node('A',[Node('A',[])])])]) ;;
 
 print_string ( affichier_compression ( compression exemple1 ));;
+
+
+
+
+
+let rec to_list a = match a with
+  |Empty -> []
+  |Node(x,[])-> [x]
+  |Node(x,l) -> x ::(List.fold_left List.append [] (List.map to_list l))
