@@ -127,25 +127,32 @@ match abr  with
       
 let exemple =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[Node('#',[])])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[ Node ( 'A',[Node('#',[])])]) ; Node ( 'N',[])  ]) ;;  
 
-Printf.printf "%B" (souschaine "AN#" exemple );; 
+
+Printf.printf "%B" (souschaine "A#" exemple );; 
 
 print_string("\n")
 (* --------------------------------------------------------------------------------------*)
 (* sous chaine commune *)
-let  souschaine_commune  chaine1 arbre2=  let  max=ref 0  and lg=ref 0   in 
+let exemple1 =  Node ( ['.' ],  [Node(['#'; 'V' ;'B' ] ,[Node(['C'; 'V' ;'B'],[Node(['D'  ; 'V' ; 'B' ],[Node(['#' ],[])])])])   ; Node (['R' ; 'V' ; 'B' ],[Node(['#' ],[])]) ])  ;; 
+let exemple3 =Node ( ['.'], [Node ( ['#'],[]) ; Node ( ['A' ; 'R' ; 'V' ],[  Node ( ['N' ;'R' ; 'V' ],[Node(['A' ; 'R' ;'V'],[])])  ; Node ( ['S' ; 'R'],[ Node ( ['#'],[])])]) ; Node ( ['N' ;'R' ;'V' ],[ Node ( ['A' ; 'R' ; 'V'],[Node(['#'],[])])]) ; Node ([ 'N' ; 'R' ; 'V'],[])  ]) ;;  
 
-    for i=0 to (String.length chaine1)-1 do 
-      
-      if ( souschaine  (( String.sub chaine1  i  ((String.length chaine1 )-i)^"#") )  arbre2 ) then   lg:=( (String.length chaine1) -i  );
-     
-      if ((!lg)>(!max)) then  max:=(!)lg 
-    done ; 
-    (!max)
-    ;;
+(* l'arbre des deux chaine (chaine1 et chaine 2 ) *)
+let rec   souschaine_commune  arbre = 
+          let  rec s_liste l = match l with 
+          []-> " " 
+          |q::t-> if (String.length (souschaine_commune q ) > String.length ( s_liste t) ) then souschaine_commune q 
+                                                                                           else  s_liste t
+           in 
+match arbre with 
+Empty->" "
+|Node(e ,liste)-> if (List.length  e == 3 ) then  (( Char.escaped ( List.hd e ))^ s_liste liste )
+                                         else s_liste liste ;;
 
-print_int(souschaine_commune "NA" exemple);;
 
 
+print_string ( souschaine_commune  exemple3)
+ 
+   
 (* ---------------------------------------------------------------------*)
 (* compression -------------------------------------------------------- *)
 let  rec suite s = match s with 
@@ -181,7 +188,6 @@ match arbre  with
 
 
 
-let exemple1 =  Node ( 'A',  [Node('B',[Node('C',[Node('D',[Node('#',[Node('.',[]) ; Node('.',[])])])])])   ; Node ('R',[Node('#',[])]) ])  ;; 
 
  (* print_string ( affichier_compression ( compression exemple1 ));; *) 
 
