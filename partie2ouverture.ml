@@ -1,7 +1,9 @@
+(* _______________________________________________________________________ *)
 type 'a gtree =
     Empty
   | Node of ('a * ('a gtree) list)
-
+(* ________________________________________________________________________*)
+(*PRMITIVES *)
 let rec  arbre_vide abr =  match abr with 
   Empty -> true 
   | a-> false 
@@ -26,6 +28,11 @@ let get_1_2  g= match g with
 Empty->'.'
 |Node (e ,l )->e 
 
+let get_2_2 abr = match abr with 
+|Empty -> []
+|Node (e,l)->l
+
+
 let  liste_lettre abr  = 
     let rec liste_racine l = match l with 
     |[]->[]
@@ -40,8 +47,6 @@ let  liste_lettre abr  =
 let rec affichage  =  function  
 []->()
 |e::l-> print_int e ; print_string " " ; affichage l ;;
-
-
 
 
 
@@ -66,7 +71,8 @@ match arbre  with
     |Empty-> "Empty"
     |Node (e, l)->"Node(" ^Char.escaped e ^", ["  ^ liste_affiche l  ^ "]  )" ;; 
 
-(* --------------------------------------- *)
+(* ----------------------------------------------------------------------------- *)
+(* construction de l'abre des sufixes *)
 
 let rec construire s  abr =  let s1= Bytes.of_string s  in  
     let rec  s_liste ss l=   let s2=Bytes.of_string ss in 
@@ -95,13 +101,15 @@ let  sufix chaine =  let  abr = ref (Node ('.', [Node ('#' ,[Empty])] ) ) in
 ;;
   (* print_string ( affichier ( sufix "BANANE")  ) *) ;;
 
- (*----------------------------------------------------- *)
+(* ----------------------------------------------------------------------------- *)
+
  
 
 let exemple0 =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[Node ( 'S',[Node ( 'S',[Node ( 'S',[])])])  ])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[ Node ( 'A',[])]) ; Node ( 'S',[])  ]) ;;    
 
 
-(* ----------------------------------------------------- *)
+(* ----------------------------------------------------------------------------------*)
+(*Sous_chaine    *)
 let rec souschaine  s abr =  let s1= Bytes.of_string s  in  
     let rec  s_liste ss l=
         match l with 
@@ -112,24 +120,38 @@ match abr  with
  |Node (e, l )-> if (Bytes.get s1 (0) == e   )  then 
                         if (String.length s == 1  && Bytes.get s1 (0)=='#' ) then  true
                         else 
-                         (print_string ( String.sub s  1  ((String.length s )-1)) ; s_liste (String.sub s  1  ((String.length s )-1))  l  )  
+                         s_liste (String.sub s  1  ((String.length s )-1))  l   
                     else  
                        s_liste s  l 
                     ;;
       
-let exemple =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[ Node ( 'A',[])]) ; Node ( 'S',[])  ]) ;;  
+let exemple =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[Node('#',[])])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[ Node ( 'A',[Node('#',[])])]) ; Node ( 'N',[])  ]) ;;  
 
-(* Printf.printf "%B" (souschaine "AS#" exemple );; *)
+Printf.printf "%B" (souschaine "AN#" exemple );; 
 
-(* ------------------------------------------------------------------- *)
+print_string("\n")
+(* --------------------------------------------------------------------------------------*)
+(* sous chaine commune *)
+let  souschaine_commune  chaine1 arbre2=  let  max=ref 0  and lg=ref 0   in 
 
+    for i=0 to (String.length chaine1)-1 do 
+      
+      if ( souschaine  (( String.sub chaine1  i  ((String.length chaine1 )-i)^"#") )  arbre2 ) then   lg:=( (String.length chaine1) -i  );
+     
+      if ((!lg)>(!max)) then  max:=(!)lg 
+    done ; 
+    (!max)
+    ;;
+
+print_int(souschaine_commune "NA" exemple);;
+
+
+(* ---------------------------------------------------------------------*)
+(* compression -------------------------------------------------------- *)
 let  rec suite s = match s with 
 []->[]
 |q::t->t ;;
 
-let get_2_2 abr = match abr with 
-|Empty -> []
-|Node (e,l)->l
 
 let rec ft liste = match liste with 
 |[]->" " 
@@ -161,7 +183,7 @@ match arbre  with
 
 let exemple1 =  Node ( 'A',  [Node('B',[Node('C',[Node('D',[Node('#',[Node('.',[]) ; Node('.',[])])])])])   ; Node ('R',[Node('#',[])]) ])  ;; 
 
-print_string ( affichier_compression ( compression exemple1 ));;
+ (* print_string ( affichier_compression ( compression exemple1 ));; *) 
 
 
 (* -------------------------------------------- *)
