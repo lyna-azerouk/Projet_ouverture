@@ -45,7 +45,7 @@ let  liste_lettre abr  =
 ;;
 
 let rec affichage  =  function  
-[]->()
+[]->print_string " "
 |e::l-> print_int e ; print_string " " ; affichage l ;;
 
 
@@ -73,40 +73,44 @@ match arbre  with
 
 (* ----------------------------------------------------------------------------- *)
 (* construction de l'abre des sufixes *)
+let  rec suite s = match s with 
+[]->[]
+|q::t->t ;;
+
 
 let rec construire s  abr =  let s1= Bytes.of_string s  in  
     let rec  s_liste ss l=   let s2=Bytes.of_string ss in 
         match l with 
-        |[Empty]->[Empty]
-        |[]->  if (String.length ss ==1 ) then  [Node (Bytes.get s2 (0) ,[Empty])]
-                                           else  [construire  ( String.sub ss  1  ((String.length ss )-1))   (Node (Bytes.get s2 (0) ,[]) ) ]
+        |[Empty]->[]
+        |[]->  if (Bytes.get s2 (0) =='#'  &&  String.length ss ==1 ) then  [Node('#',[])] 
+                                              else   [construire  ( String.sub ss  1  ((String.length ss )-1))   (Node (Bytes.get s2 (0) ,[]) ) ]
         |(q::t )-> [construire   ss  q ] @  s_liste ss t in 
 match abr  with 
- Empty -> Empty                     
+ Empty -> Empty                   
  |Node (e, l )-> 
-                  if (Bytes.get s1 (0) == e  ) then  Node ( e, s_liste ( String.sub s  1  ((String.length s )-1))  l )
-
-                 else Node (e ,  s_liste s l  ) ;;
-
-
-(* print_string ( affichier ( construire "NE" (Node ('.', [Node ('#' ,[Empty]) ; Node ('B' ,[Empty])  ] ) )) );;    *)
+                  if (Bytes.get s1 (0) == e &&  String.length s  >1  )   then
+                  Node ( e, s_liste ( String.sub s  1  ((String.length s )-1)) ( l ))
+                    
+                 else  if ( e=='#' ) then Node('#',[] ) else   Node (e ,  s_liste s l)   ;;
 
 
-let  sufix chaine =  let  abr = ref (Node ('.', [Node ('#' ,[Empty])] ) ) in 
+ (* print_string ( affichier ( construire "N" (Node ('.', [Node ('#' ,[Empty]) ; Node ('B' ,[Empty])  ] ) )) );;     *)
+ print_string ("\n");;
+
+
+let  sufix chaine =  let  abr = ref (Node ('.', [Node ('#' ,[])] ) ) in 
    for i =0 to  (String.length chaine )-1 do 
-      abr:= construire ( String.sub chaine   i ((String.length chaine ) - i ))   ((!)abr) ;
-  
+      abr:= construire ( String.sub chaine   i ((String.length chaine ) -i))   ((!)abr) ;
+     
     done ;
     (!) abr 
 ;;
-  (* print_string ( affichier ( sufix "BANANE")  ) *) ;;
 
 (* ----------------------------------------------------------------------------- *)
 
  
 
 let exemple0 =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[Node ( 'S',[Node ( 'S',[Node ( 'S',[])])])  ])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[ Node ( 'A',[])]) ; Node ( 'S',[])  ]) ;;    
-
 
 (* ----------------------------------------------------------------------------------*)
 (*Sous_chaine    *)
@@ -126,15 +130,19 @@ match abr  with
                     ;;
       
 let exemple =Node ('.', [Node ( '#',[]) ; Node ( 'A',[  Node ( 'N',[Node('#',[])])  ; Node ( 'S',[ Node ( '#',[])])]) ; Node ( 'N',[ Node ( 'A',[Node('#',[])])]) ; Node ( 'N',[])  ]) ;;  
+let c1 ="D'abord confinée dans les monastères et limitée essentiellement au domaine religieux, la traduction s'étend au domaine profane dès le Xe  siècle. Bientôt apparaissent en langue romane des fabliaux, comédies ou romans imités d'oeuvres de l'Antiquité, et les premiers grands poètes - Chrétien de Troyes, Marie de France, Rutebeuf, Jean de Meung - sont avant tout traducteurs (à une époque où traduction, imitation et création ne sont guère différenciées). Ce n'est toutefois qu'au XIVe siècle, marqué par la création des premières universités, que la traduction quitte les monastères et connaît un bref essor grâce à la protection de la cour.#";;
 
+let time f x y  =
+    let t = Sys.time() in
+    let fx = f x (sufix y) in
+    Printf.printf "\nExecution time: %fs\n" (Sys.time() -. t);
+    fx ;;
+time souschaine "ANAN#"  "ANANAS#" ;;   
 
-Printf.printf "%B" (souschaine "A#" exemple );; 
-
-print_string("\n")
-(* --------------------------------------------------------------------------------------*)
+(* ___________________________________________________________________________________*)
 (* sous chaine commune *)
 let exemple1 =  Node ( ['.' ],  [Node(['#'; 'V' ;'B' ] ,[Node(['C'; 'V' ;'B'],[Node(['D'  ; 'V' ; 'B' ],[Node(['#' ],[])])])])   ; Node (['R' ; 'V' ; 'B' ],[Node(['#' ],[])]) ])  ;; 
-let exemple3 =Node ( ['.'], [Node ( ['#'],[]) ; Node ( ['A' ; 'R' ; 'V' ],[  Node ( ['N' ;'R' ; 'V' ],[Node(['A' ; 'R' ;'V'],[])])  ; Node ( ['S' ; 'R'],[ Node ( ['#'],[])])]) ; Node ( ['N' ;'R' ;'V' ],[ Node ( ['A' ; 'R' ; 'V'],[Node(['#'],[])])]) ; Node ([ 'N' ; 'R' ; 'V'],[])  ]) ;;  
+let exemple3 =Node ( ['.'], [Node ( ['#'],[]) ; Node ( ['A' ],[  Node ( ['N'  ],[Node(['A' ],[])])  ; Node ( ['S' ; 'R'],[ Node ( ['#'],[])])]) ; Node ( ['N' ;'R' ;'V' ],[ Node ( ['A' ; 'R' ; 'V'],[Node(['#'],[])])]) ; Node ([ 'N' ; 'R' ; 'V'],[])  ]) ;;  
 
 (* l'arbre des deux chaine (chaine1 et chaine 2 ) *)
 let rec   souschaine_commune  arbre = 
@@ -150,14 +158,10 @@ Empty->" "
 
 
 
-print_string ( souschaine_commune  exemple3)
+print_string ("La plus longue sous chaine commune dans l'arbre exemple3 =>"^souschaine_commune  exemple3);;
  
-   
-(* ---------------------------------------------------------------------*)
+(* _________________________________________________________________________________ *)
 (* compression -------------------------------------------------------- *)
-let  rec suite s = match s with 
-[]->[]
-|q::t->t ;;
 
 
 let rec ft liste = match liste with 
@@ -192,4 +196,16 @@ match arbre  with
  (* print_string ( affichier_compression ( compression exemple1 ));; *) 
 
 
-(* -------------------------------------------- *)
+(*TEST -------------------------------------------- *)
+
+print_string("\n");;
+print_string("la sous chaine (ANAN#) existe dans l'arbre ananas ?");;
+let donne =sufix "ANANAS#" ;;
+ Printf.printf "%B" ( souschaine "ANAN#"  donne );;  
+
+print_string("\n");;
+
+
+
+
+
