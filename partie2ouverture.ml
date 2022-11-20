@@ -198,6 +198,19 @@ match arbre  with
 
 (*TEST -------------------------------------------- *)
 
+let rec pluslongue_souschaine_compresse abr = 
+  match abr with
+  | Empty -> ""
+  | Node(x,l) -> 
+      let max_length a b = 
+        if String.length a > String.length b then a else b
+      in
+        x^List.fold_left (fun f a -> max_length f (pluslongue_souschaine_compresse a)) "" l ;
+      
+      ;;
+
+(*prend l'arbre compresse de C1 et C2 ET Retourne la plus longue sous chaine commune*)
+
 print_string("\n");;
 print_string("la sous chaine (ANAN#) existe dans l'arbre ananas ?");;
 let donne =sufix "ANANAS#" ;;
