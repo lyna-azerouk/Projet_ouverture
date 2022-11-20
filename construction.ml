@@ -64,7 +64,7 @@ if x>=2 then (let l = concat (!abr) (!abr2) suf in
 abr:= Node(get_1_2 (!abr),l) ; (!abr)  ) else (!abr) ;;
 
 
-let suffixe s  =
+let arbre_suffixe s  =
 
   let x=String.length s and abr = ref (Node('~',[])) in 
     for j=0 to x-1 do
@@ -84,7 +84,7 @@ let l2 = to_list z in affichage l2 ;*)
 
 
 
-let x= suffixe "ANANAS#" ;;
+let x= arbre_suffixe "ANANAS#" ;;
     affichage (to_list x)
 
 
